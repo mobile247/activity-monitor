@@ -12,22 +12,18 @@ jobs:
     runs-on: windows-latest
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Set up Rust
-      uses: actions-rs/toolchain@v1
+      uses: dtolnay/rust-toolchain@stable
       with:
-        toolchain: stable
-        profile: minimal
-        override: true
+        targets: x86_64-pc-windows-msvc
     
     - name: Build Windows DLL
       run: cargo build --release
-      # Assuming your Rust project is at the repository root
-      # If it's in a subdirectory, adjust this path accordingly
     
     - name: Upload Windows DLL
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: windows-dll
         path: target/release/activity_monitor.dll
@@ -36,23 +32,18 @@ jobs:
     runs-on: macos-latest
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Set up Rust
-      uses: actions-rs/toolchain@v1
+      uses: dtolnay/rust-toolchain@stable
       with:
-        toolchain: stable
-        target: aarch64-apple-darwin
-        profile: minimal
-        override: true
+        targets: aarch64-apple-darwin
     
     - name: Build macOS dylib
-      run: |
-        rustup target add aarch64-apple-darwin
-        cargo build --target aarch64-apple-darwin --release
+      run: cargo build --target aarch64-apple-darwin --release
     
     - name: Upload macOS dylib
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: macos-dylib
         path: target/aarch64-apple-darwin/release/libactivity_monitor.dylib
