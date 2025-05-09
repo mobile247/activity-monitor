@@ -1,0 +1,58 @@
+name: Build Rust Library for Windows and macOS
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        profile: minimal
+        override: true
+    
+    - name: Build Windows DLL
+      run: cargo build --release
+      # Assuming your Rust project is at the repository root
+      # If it's in a subdirectory, adjust this path accordingly
+    
+    - name: Upload Windows DLL
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows-dll
+        path: target/release/activity_monitor.dll
+  
+  build-macos:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        target: aarch64-apple-darwin
+        profile: minimal
+        override: true
+    
+    - name: Build macOS dylib
+      run: |
+        rustup target add aarch64-apple-darwin
+        cargo build --target aarch64-apple-darwin --release
+    
+    - name: Upload macOS dylib
+      uses: actions/upload-artifact@v3
+      with:
+        name: macos-dylib
+        path: target/aarch64-apple-darwin/release/libactivity_monitor.dylib
