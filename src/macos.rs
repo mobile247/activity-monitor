@@ -126,7 +126,7 @@ unsafe extern "C" fn event_callback(
         // Extract key code from event
         let key_code = GetKeyCodeFromEvent(event);
         
-        // Process the event
+        // Process the event - get both increment_counter and is_genuine flags
         let (increment_counter, is_genuine) = process_keyboard_event(
             key_code, 
             event_type_u32 == EVENT_TYPE_KEY_DOWN
@@ -138,7 +138,9 @@ unsafe extern "C" fn event_callback(
         }
         
         // Update activity time only for genuine activity
-        super::update_genuine_activity_time(is_genuine);
+        if is_genuine {
+            super::update_genuine_activity_time(true);
+        }
     } 
     // Handle mouse events
     else if EVENT_TYPE_MOUSE_EVENTS.contains(&event_type_u32) {

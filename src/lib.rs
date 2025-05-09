@@ -165,7 +165,6 @@ pub(crate) fn increment_mouse() {
 }
 
 // Update the timestamp for genuine user activity
-// This is called only when we detect genuine user activity, not for stuck keys
 pub(crate) fn update_genuine_activity_time(is_genuine: bool) {
     if is_genuine {
         let now = SystemTime::now()

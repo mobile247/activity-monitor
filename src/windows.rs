@@ -97,16 +97,16 @@ pub fn start_monitoring() {
                 Some(keyboard_proc),
                 h_module,
                 0
-            ));
-            
+            ).expect("Failed to set keyboard hook"));
+                        
             // Set mouse hook
             MOUSE_HOOK = Some(SetWindowsHookExW(
                 WH_MOUSE_LL,
                 Some(mouse_proc),
                 h_module,
                 0
-            ));
-            
+            ).expect("Failed to set mouse hook"));
+
             // Message loop to keep hooks active
             let mut msg = MSG::default();
             let mut last_cleanup = Instant::now();
@@ -182,16 +182,18 @@ extern "system" fn keyboard_proc(code: i32, wparam: WPARAM, lparam: LPARAM) -> L
                 let is_key_down = wparam.0 == WM_KEYDOWN as usize || 
                                   wparam.0 == WM_SYSKEYDOWN as usize;
                 
-                // Process the event
+                // Process the event - get both increment_counter and is_genuine flags
                 let (increment_counter, is_genuine) = process_keyboard_event(virtual_key, is_key_down);
                 
                 if increment_counter {
-                    // Increment keyboard counter for genuine key activity
+                    // Increment keyboard counter for activity
                     super::increment_keyboard();
                 }
                 
                 // Update last activity time only for genuine activity
-                super::update_genuine_activity_time(is_genuine);
+                if is_genuine {
+                    super::update_genuine_activity_time(true);
+                }
             }
         }
     }
